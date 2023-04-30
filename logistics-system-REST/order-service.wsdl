@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:tns="http://www.example.com/OrderService/"
+             targetNamespace="http://www.example.com/OrderService/">
+
+  <types>
+    <xsd:schema targetNamespace="http://www.example.com/OrderService/">
+      <xsd:complexType name="Item">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:string"/>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="price" type="xsd:float"/>
+          <xsd:element name="quantity" type="xsd:int"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ItemsArray">
+        <xsd:sequence>
+          <xsd:element name="item" type="tns:Item" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="FulfillOrderRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="customerName" type="xsd:string"/>
+            <xsd:element name="customerAddress" type="xsd:string"/>
+            <xsd:element name="paymentMode" type="xsd:string"/>
+            <xsd:element name="items" type="tns:ItemsArray"/>
+            <xsd:element name="totalPrice" type="xsd:float"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="FulfillOrderResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="trackingID" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </types>
+
+  <message name="FulfillOrderRequestMessage">
+    <part name="parameters" element="tns:FulfillOrderRequest"/>
+  </message>
+  <message name="FulfillOrderResponseMessage">
+    <part name="parameters" element="tns:FulfillOrderResponse"/>
+  </message>
+
+  <portType name="OrderPort">
+    <operation name="FulfillOrder">
+      <input message="tns:FulfillOrderRequestMessage"/>
+      <output message="tns:FulfillOrderResponseMessage"/>
+    </operation>
+  </portType>
+
+  <binding name="OrderPortBinding" type="tns:OrderPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="FulfillOrder">
+      <soap:operation soapAction="http://www.example.com/OrderService/FulfillOrder"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+
+  <service name="OrderService">
+    <port name="OrderPort" binding="tns:OrderPortBinding">
+      <soap:address location="http://localhost:8000/wsdl"/>
+    </port>
+  </service>
+</definitions>
